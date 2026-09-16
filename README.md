@@ -2,6 +2,8 @@
 
 Agenda hebdomadaire des séances de huit cinémas lyonnais, déployable sans serveur sur GitHub Pages.
 
+**[Ouvrir l’application](https://feuille2cedric.github.io/cine-lyon/)**
+
 **Cinémas :** Pathé Bellecour, Pathé Vaise, Pathé Carré de Soie, Lumière Bellecour, Lumière Fourmi, Lumière Terreaux, Institut Lumière et Comœdia.
 
 ## Utilisation
