@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#faf9f6">
+  <meta name="description" content="Votre semaine de cinéma à Lyon. Les séances de vos cinémas réunies dans un agenda.">
+  <title>Travelling — Votre semaine de cinéma à Lyon</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="stylesheet" href="style.css">
+  <script src="app.js" type="module"></script>
+</head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="./"><span class="brand-icon">t.</span>travelling<span class="brand-dot">●</span></a>
+  <p class="tagline">Le cinéma trouve sa place.</p>
+  <div class="mini-heading"><span id="mini-month"></span><span class="lyon-pill">LYON</span></div>
+  <div id="mini-calendar" class="mini-calendar" aria-label="Choisir une date"></div>
+  <div class="section-heading"><h2>Mes cinémas</h2><button id="toggle-all" class="text-button">Tout masquer</button></div>
+  <div id="cinemas" class="cinemas"></div>
+  <div class="sidebar-note"><span class="note-icon">↗</span><p>Une envie de grand écran ?<br><strong>Gardez la semaine en vue.</strong></p></div>
+  <div class="sidebar-bottom"><span class="live-dot"></span><span id="updated">Chargement des programmes…</span><button id="sources-button" class="text-button">Sources & état</button></div>
+</aside>
+<main>
+  <header class="topbar"><div class="eyebrow">VOTRE AGENDA CINÉMA <span>/</span> LYON & ALENTOURS</div><a href="https://www.institut-lumiere.org/" target="_blank" rel="noopener" class="top-link">La ville du cinéma ↗</a></header>
+  <section class="intro"><div><div class="heading-line"><h1>À l’affiche cette semaine<span>.</span></h1><span class="edition">LE PROGRAMME</span></div><p>Un jour, une heure, un film. Votre prochaine séance est ici.</p></div></section>
+  <section class="toolbar" aria-label="Navigation de l’agenda">
+    <div class="date-controls"><button id="today">Aujourd’hui</button><div class="arrows"><button id="previous" aria-label="Période précédente">‹</button><button id="next" aria-label="Période suivante">›</button></div><h2 id="range"></h2><label class="date-picker" title="Choisir une date"><input id="date" type="date" aria-label="Choisir une date"></label></div>
+    <div class="view-controls"><div class="segmented" aria-label="Vue"><button data-view="week" aria-pressed="true">Semaine</button><button data-view="day" aria-pressed="false">Jour</button><button data-view="list" aria-pressed="false">Liste</button></div></div>
+  </section>
+  <section class="filterbar"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Trouver un film…" aria-label="Rechercher un film"></label><select id="version" aria-label="Version"><option value="">Toutes les versions</option><option value="VO">VO / VOST</option><option value="VF">VF</option></select><span id="count" aria-live="polite"></span><label class="zoom">Zoom <input id="zoom" type="range" min="60" max="160" value="88" aria-label="Zoom de l’agenda"></label></section>
+  <div id="notice" class="notice" role="status" hidden></div>
+  <div id="calendar-shell" class="calendar-shell"><div id="calendar" class="calendar"></div><div id="empty" class="empty" hidden><span>◷</span><h3>Aucune séance à afficher</h3><p id="empty-text">Essayez une autre semaine ou ajustez vos filtres.</p><button id="reset">Réinitialiser les filtres</button></div></div>
+  <footer><span>+N : AUTRES SÉANCES DU CRÉNEAU · CLIQUEZ POUR LES VOIR</span><span>Heure de Lyon · Fins estimées, hors publicités et échanges.</span></footer>
+</main>
+<dialog id="details" aria-labelledby="detail-title"><button class="close" aria-label="Fermer">×</button><div id="detail-content"></div></dialog>
+<dialog id="sources" aria-labelledby="sources-title"><button class="close" aria-label="Fermer">×</button><p class="eyebrow">LES PROGRAMMES</p><h2 id="sources-title">Sources & actualisation</h2><p>Les séances proviennent des sites des cinémas. Les semaines futures apparaissent à mesure que leurs programmes sont publiés.</p><div id="source-list"></div></dialog>
+<noscript>Activez JavaScript pour afficher l’agenda des séances.</noscript>
+</body></html>
