@@ -29,7 +29,7 @@
   <section class="filterbar"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Trouver un film…" aria-label="Rechercher un film"></label><select id="version" aria-label="Version"><option value="">Toutes les versions</option><option value="VO">VO / VOST</option><option value="VF">VF</option></select><span id="count" aria-live="polite"></span><label class="zoom">Zoom <input id="zoom" type="range" min="60" max="160" value="88" aria-label="Zoom de l’agenda"></label></section>
   <div id="notice" class="notice" role="status" hidden></div>
   <div id="calendar-shell" class="calendar-shell"><div id="calendar" class="calendar"></div><div id="empty" class="empty" hidden><span>◷</span><h3>Aucune séance à afficher</h3><p id="empty-text">Essayez une autre semaine ou ajustez vos filtres.</p><button id="reset">Réinitialiser les filtres</button></div></div>
-  <footer><span>+N : AUTRES SÉANCES DU CRÉNEAU · CLIQUEZ POUR LES VOIR</span><span>Heure de Lyon · Fins estimées, hors publicités et échanges.</span></footer>
+  <footer><span>+N : AUTRES SÉANCES DU CRÉNEAU</span><button id="footer-sources" class="text-button">Sources & mise à jour</button><span>Heure de Lyon · Fins estimées.</span></footer>
 </main>
 <dialog id="details" aria-labelledby="detail-title"><button class="close" aria-label="Fermer">×</button><div id="detail-content"></div></dialog>
 <dialog id="sources" aria-labelledby="sources-title"><button class="close" aria-label="Fermer">×</button><p class="eyebrow">LES PROGRAMMES</p><h2 id="sources-title">Sources & actualisation</h2><p>Les séances proviennent des sites des cinémas. Les semaines futures apparaissent à mesure que leurs programmes sont publiés.</p><div id="source-list"></div></dialog>

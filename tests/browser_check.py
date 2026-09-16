@@ -6,7 +6,8 @@ from playwright.sync_api import sync_playwright
 
 url=os.environ.get('TEST_URL','http://127.0.0.1:8765/')
 with sync_playwright() as p:
-    browser=p.chromium.launch(channel='msedge' if os.name=='nt' else None,headless=True)
+    channel=os.environ.get('TEST_BROWSER','msedge' if os.name=='nt' else 'chromium')
+    browser=p.chromium.launch(channel=None if channel=='chromium' else channel,headless=True)
     context=browser.new_context(viewport={'width':1440,'height':1000},accept_downloads=True)
     page=context.new_page();errors=[]
     page.on('pageerror',lambda e:errors.append(str(e)))
