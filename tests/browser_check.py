@@ -16,6 +16,8 @@ with sync_playwright() as p:
     assert page.locator('.cinema-row').count()==8
     assert page.locator('.day-header').count()==7
     assert page.locator('#genre').is_visible()
+    assert page.locator('#duration').is_visible()
+    assert page.locator('.smartbar button').count()>=5
     print('Initial:',page.locator('#count').inner_text())
     results=page.evaluate('''async () => {
       const {layoutSessions,monday,addDays,makeIcs,foldIcsLine}=await import('./calendar.js');
@@ -39,10 +41,21 @@ with sync_playwright() as p:
     assert page.locator('#details').is_visible()
     assert page.locator('#detail-title').inner_text()
     assert 'genre' in page.locator('.detail-meta').inner_text().lower()
+    page.locator('#favorite-film').click()
+    assert page.locator('#favorite-film').get_attribute('aria-pressed')=='true'
     with page.expect_download() as download:
         page.locator('#export-ics').click()
     assert download.value.suggested_filename.endswith('.ics')
     page.keyboard.press('Escape')
+    page.locator('#favorites-toggle').click()
+    assert page.locator('#favorites-toggle').get_attribute('aria-pressed')=='true'
+    assert page.locator('.session').count()>0
+    page.locator('#favorites-toggle').click()
+    page.locator('#duration').select_option('short')
+    page.locator('#duration').select_option('')
+    page.locator('#compact').click()
+    assert 'compact-view' in page.locator('#calendar').get_attribute('class')
+    page.locator('#compact').click()
     if page.locator('.overflow-button').count():
         page.locator('.overflow-button').first.click()
         assert page.locator('#details .list-session').count()>0
