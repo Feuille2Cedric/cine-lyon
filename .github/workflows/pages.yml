@@ -4,8 +4,7 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
-    - cron: '0 6 * * *'
-    - cron: '0 7 * * *'
+    - cron: '17 5,11,17,23 * * *'
 permissions:
   contents: read
   pages: write
@@ -21,41 +20,23 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Respecter 8h à Lyon
-        id: lyon-time
-        shell: bash
-        run: |
-          if [ "${{ github.event_name }}" != "schedule" ] || [ "$(TZ=Europe/Paris date +%H)" = "08" ]; then
-            echo "run=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "run=false" >> "$GITHUB_OUTPUT"
-          fi
       - uses: actions/checkout@v4
-        if: steps.lyon-time.outputs.run == 'true'
       - uses: actions/setup-python@v5
-        if: steps.lyon-time.outputs.run == 'true'
         with:
           python-version: '3.12'
           cache: pip
       - run: pip install -r requirements.txt
-        if: steps.lyon-time.outputs.run == 'true'
       - name: Vérifier les collecteurs
-        if: steps.lyon-time.outputs.run == 'true'
         run: python -m unittest discover -s tests -p 'test_*.py'
       - name: Conserver les séances déjà publiées
-        if: steps.lyon-time.outputs.run == 'true'
         env:
           PREVIOUS_DATA_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/data/schedule.json
         run: python scripts/restore.py
       - name: Actualiser les programmes
-        if: steps.lyon-time.outputs.run == 'true'
         run: python scripts/collect.py
       - uses: actions/configure-pages@v5
-        if: steps.lyon-time.outputs.run == 'true'
       - uses: actions/upload-pages-artifact@v4
-        if: steps.lyon-time.outputs.run == 'true'
         with:
           path: site
       - uses: actions/deploy-pages@v4
-        if: steps.lyon-time.outputs.run == 'true'
         id: deployment
