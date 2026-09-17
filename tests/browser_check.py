@@ -49,7 +49,7 @@ with sync_playwright() as p:
     page.keyboard.press('Escape')
     page.locator('#favorites-toggle').click()
     assert page.locator('#favorites-toggle').get_attribute('aria-pressed')=='true'
-    assert page.locator('.session').count()>0
+    assert page.locator('.session').count()==1
     page.locator('#favorites-toggle').click()
     page.locator('#duration').select_option('short')
     page.locator('#duration').select_option('')
