@@ -50,11 +50,42 @@ def duration(text):
     m = re.search(r'(\d+)\s*(?:min|mn)', str(text), re.I)
     return int(m[1]) if m else None
 
-def screening(cinema, title, start, minutes, url, version='', extra='', identity=''):
+def genres(value):
+    if not value:
+        return []
+    if isinstance(value, str):
+        raw = re.split(r'[,/|]', value)
+    else:
+        raw = []
+        for item in value:
+            if isinstance(item, dict):
+                raw.append(item.get('name') or item.get('label') or item.get('title') or '')
+            else:
+                raw.append(str(item))
+    result = []
+    for item in raw:
+        name = re.sub(r'\s+', ' ', str(item)).strip(' .;-')
+        if name and name.lower() not in {g.lower() for g in result}:
+            result.append(name)
+    return result
+
+def screening(cinema, title, start, minutes, url, version='', extra='', identity='', movie_genres=None):
     date = datetime.fromisoformat(start.replace('Z','+00:00'))
     date = date.replace(tzinfo=PARIS) if date.tzinfo is None else date.astimezone(PARIS)
     stable = '|'.join([cinema,title,date.isoformat(),version,identity])
-    return dict(id=hashlib.sha256(stable.encode()).hexdigest()[:18],cinema=cinema,title=title.strip(),start=date.isoformat(timespec='seconds'),duration=minutes,url=url,version=version,extra=extra)
+    return dict(id=hashlib.sha256(stable.encode()).hexdigest()[:18],cinema=cinema,title=title.strip(),start=date.isoformat(timespec='seconds'),duration=minutes,url=url,version=version,extra=extra,genres=genres(movie_genres))
+
+def extract_genres_from_text(text):
+    patterns = [
+        r'Genres?\s*:\s*([^|•\n\r]+)',
+        r'Genre\s*:\s*([^|•\n\r]+)',
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, text, re.I)
+        if match:
+            chunk = re.split(r'\s{2,}|Durée|Année|Nationalité|De\s+', match[1], maxsplit=1)[0]
+            return genres(chunk)
+    return []
 
 def ticket(item, fallback):
     entries = (item.get('data') or {}).get('ticketing') or []
@@ -95,13 +126,14 @@ def collect_lumiere():
                 try:
                     text=soup(film_url).get_text(' ',strip=True)
                     match=re.search(r'Durée\s*:\s*(\d+h\d+)',text)
-                    durations[film_url]=duration(match[1]) if match else None
+                    durations[film_url]=(duration(match[1]) if match else None, extract_genres_from_text(text))
                 except requests.RequestException:
-                    durations[film_url]=None
+                    durations[film_url]=(None, [])
                 time.sleep(.08)
             for slot in row.select('time.session[datetime]'):
                 a=slot.find('a'); v=slot.select_one('.version')
-                events.append(screening(cinema,title,slot['datetime'],durations[film_url],a['href'] if a else film_url,v.get_text(strip=True) if v else ''))
+                film_duration, film_genres = durations[film_url]
+                events.append(screening(cinema,title,slot['datetime'],film_duration,a['href'] if a else film_url,v.get_text(strip=True) if v else '',movie_genres=film_genres))
     return events, sorted(days), 'Cinémas Lumière', base
 
 def parse_institut(page, url):
@@ -134,7 +166,7 @@ def parse_institut(page, url):
                 film_duration=duration(remaining)
                 context=fragment.get_text(' ',strip=True)
                 version='VF' if 'SÉANCE ENFANTS' in context or 'TOUT-PETITS' in context else ''
-                result.append(screening('institut',name,day+'T'+parts[i]+':00',film_duration,urljoin(url,anchor['href']),version,context))
+                result.append(screening('institut',name,day+'T'+parts[i]+':00',film_duration,urljoin(url,anchor['href']),version,context,movie_genres=extract_genres_from_text(context)))
     if not days:
         raise ValueError('Aucune date trouvée dans le calendrier Institut Lumière')
     return result,days
@@ -170,7 +202,7 @@ def collect_comoedia():
         for day,slots in schedule.items():
             for item in slots:
                 tags=item.get('tags',[])
-                events.append(screening('comoedia',movie['title'],item['startsAt'],round(movie['runtime']/60) if movie.get('runtime') else None,ticket(item,'https://www.cinema-comoedia.com/films/'),language(tags),(item.get('screen') or {}).get('name',''),item['id']))
+                events.append(screening('comoedia',movie['title'],item['startsAt'],round(movie['runtime']/60) if movie.get('runtime') else None,ticket(item,'https://www.cinema-comoedia.com/films/'),language(tags),(item.get('screen') or {}).get('name',''),item['id'],movie.get('genres') or movie.get('genre')))
     return events,[(start+timedelta(days=d)).isoformat() for d in range(35)],'Comœdia','https://www.cinema-comoedia.com/films/'
 
 def repair_allocine_movies(data, cache):
@@ -186,10 +218,10 @@ def repair_allocine_movies(data, cache):
                 page=soup('https://www.allocine.fr/film/fichefilm_gen_cfilm='+movie_id+'.html')
                 title=page.select_one('.titlebar-title')
                 info=page.select_one('.meta-body-info')
-                cache[movie_id]={'title':title.get_text(' ',strip=True) if title else 'Séance · titre non communiqué','runtime':info.get_text(' ',strip=True) if info else ''}
+                cache[movie_id]={'title':title.get_text(' ',strip=True) if title else 'Séance · titre non communiqué','runtime':info.get_text(' ',strip=True) if info else '','genres':extract_genres_from_text(page.get_text(' ',strip=True))}
             except requests.RequestException:
                 # A removed movie record must not hide the rest of a cinema's week.
-                cache[movie_id]={'title':'Séance · titre non communiqué','runtime':''}
+                cache[movie_id]={'title':'Séance · titre non communiqué','runtime':'','genres':[]}
         row['movie']=cache[movie_id]
 
 def parse_allocine(data, cinema, source_url):
@@ -202,7 +234,7 @@ def parse_allocine(data, cinema, source_url):
             for item in slots:
                 tags=item.get('tags',[])
                 extra=' · '.join((item.get('experience') or [])+(item.get('projection') or []))
-                events.append(screening(cinema,movie['title'],item['startsAt'],duration(movie.get('runtime','')),ticket(item,source_url),language(tags),extra,str(item['internalId'])))
+                events.append(screening(cinema,movie['title'],item['startsAt'],duration(movie.get('runtime','')),ticket(item,source_url),language(tags),extra,str(item['internalId']),movie.get('genres') or movie.get('genre')))
     return events
 
 def collect_pathe(cinema, theater):

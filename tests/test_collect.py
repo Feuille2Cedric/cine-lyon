@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 from bs4 import BeautifulSoup
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
-from collect import duration,screening,parse_institut,parse_allocine
+from collect import duration,genres,screening,parse_institut,parse_allocine
 
 class CollectorTests(unittest.TestCase):
     def test_duration(self):
@@ -16,6 +16,11 @@ class CollectorTests(unittest.TestCase):
         winter=screening('c','Film','2026-12-01T21:00:00',90,'https://example.org')
         self.assertTrue(summer['start'].endswith('+02:00'))
         self.assertTrue(winter['start'].endswith('+01:00'))
+        self.assertEqual(summer['genres'],[])
+
+    def test_genres(self):
+        self.assertEqual(genres([{'name':'Drame'},'Comédie','drame']),['Drame','Comédie'])
+        self.assertEqual(genres('Thriller / Action, Policier'),['Thriller','Action','Policier'])
 
     def test_institut_multiple_screenings_and_not_film_duration_as_start(self):
         html='''<h1>Calendrier septembre 2026</h1><div><h2>Mercredi 16 septembre</h2><article><p><strong>14h30</strong> ENFANTS <a href="/film"><i>Film A</i></a> (77mn)<br><strong>16h</strong> CINÉ-CLUB <a href="/film2"><i>Film B</i></a> (Réalisateur, 1h45)</p></article></div>'''
@@ -27,11 +32,12 @@ class CollectorTests(unittest.TestCase):
 
     def test_pathe_versions_and_booking(self):
         event={'internalId':1,'startsAt':'2026-09-20T10:40:00','tags':['Localization.Version.Original','Showtime.Accessibility.Subtitled'],'data':{'ticketing':[{'provider':'default','urls':['https://s.pathe.fr/fr/booking']}]}}
-        payload={'results':[{'movie':{'title':'Film','runtime':'1h 47min'},'showtimes':{'original_st':[event]}}]}
+        payload={'results':[{'movie':{'title':'Film','runtime':'1h 47min','genres':[{'name':'Drame'}]},'showtimes':{'original_st':[event]}}]}
         result=parse_allocine(payload,'pathe-bellecour','https://www.allocine.fr')
         self.assertEqual(result[0]['version'],'VOST')
         self.assertEqual(result[0]['duration'],107)
         self.assertEqual(result[0]['url'],'https://s.pathe.fr/fr/booking')
+        self.assertEqual(result[0]['genres'],['Drame'])
         self.assertEqual(parse_allocine({'results':None},'c','https://example.org'),[])
 
 if __name__=='__main__':unittest.main()

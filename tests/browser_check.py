@@ -15,6 +15,7 @@ with sync_playwright() as p:
     page.wait_for_selector('.session')
     assert page.locator('.cinema-row').count()==8
     assert page.locator('.day-header').count()==7
+    assert page.locator('#genre').is_visible()
     print('Initial:',page.locator('#count').inner_text())
     results=page.evaluate('''async () => {
       const {layoutSessions,monday,addDays,makeIcs,foldIcsLine}=await import('./calendar.js');
@@ -37,6 +38,7 @@ with sync_playwright() as p:
     page.locator('.session').first.click()
     assert page.locator('#details').is_visible()
     assert page.locator('#detail-title').inner_text()
+    assert 'genre' in page.locator('.detail-meta').inner_text().lower()
     with page.expect_download() as download:
         page.locator('#export-ics').click()
     assert download.value.suggested_filename.endswith('.ics')
