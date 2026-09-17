@@ -7,3 +7,29 @@
 .session{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start}.session>span{flex-shrink:0;max-width:100%}.filterbar select{min-width:140px}
 .smartbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:9px 32px;border-bottom:1px solid var(--line);font-size:10px;color:#8c867d}.smartbar button{font-size:10px;padding:6px 10px}.smartbar button[aria-pressed=true],.smartbar button.active{background:#2f302f;color:#fff;border-color:#2f302f}.smartbar label{display:flex;align-items:center;gap:6px}.smartbar input{border:1px solid #e4e0d8;border-radius:6px;padding:5px 6px;font-size:10px;color:#5f5a52}.session-badges{display:flex;gap:3px;flex-wrap:wrap}.session-badge{display:inline-block;font-size:7px;margin-top:5px;border:1px solid currentColor;border-radius:3px;padding:1px 3px;opacity:.7}.compact-view .session{padding:3px 4px}.compact-view .session-title{font-size:9px;margin:2px 0}.compact-view .session-cinema,.compact-view .session-badges{display:none}.source-badge{display:inline-block;margin-left:6px;padding:2px 5px;border-radius:4px;font-size:8px;font-weight:650;text-transform:uppercase;letter-spacing:.8px}.source-badge.ok{background:#e6f0e8;color:#51725a}.source-badge.warn{background:#fff1d6;color:#8b6426}.same-film{border-top:1px solid var(--line);margin-top:18px;padding-top:14px}.same-film>span{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#a3998a}.same-film .list-session{padding:10px 0}.detail-actions{flex-wrap:wrap}
 @media(max-width:700px){.smartbar{padding:9px 18px;gap:6px}.smartbar button{font-size:9px;padding:6px 8px}.smartbar label{font-size:9px}.smartbar input{width:88px}.filterbar select#duration{max-width:118px;min-width:118px}}
+@media(max-width:700px){
+  body{background:#fff}
+  .sidebar{position:sticky;top:0;z-index:20;background:#fff;padding-bottom:10px}
+  .brand{height:32px}.brand-icon{border-radius:9px}.brand-dot{display:none}
+  .cinemas{margin:14px -18px 0;padding:0 18px 3px;scrollbar-width:none}.cinemas::-webkit-scrollbar{display:none}
+  .cinema-row{height:32px;max-width:180px;white-space:nowrap}.cinema-row span:not(.cinema-count){overflow:hidden;text-overflow:ellipsis}
+  main{height:auto;min-height:calc(100dvh - 94px)}
+  .intro{padding:18px 18px 13px}.heading-line{display:block}h1{font-size:21px;line-height:1.1}.intro p{margin-top:9px}
+  .toolbar{padding:0 18px 12px;display:grid;grid-template-columns:1fr;gap:10px}
+  .date-controls{display:grid;grid-template-columns:auto auto 1fr auto;gap:8px;width:100%}.date-controls h2{justify-self:start;white-space:nowrap}.date-controls .arrows{justify-self:start}.date-picker{justify-self:end}
+  .view-controls{overflow:auto;margin-right:-18px;padding-right:18px;scrollbar-width:none}.view-controls::-webkit-scrollbar{display:none}.segmented{width:max-content}
+  .filterbar{display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:10px 18px 9px;gap:8px}
+  .search{grid-column:1 / -1;background:#faf9f6;border:1px solid #ece8df;border-radius:8px;padding:7px 10px}.search span{font-size:18px}.search input{width:100%;font-size:12px}
+  .filterbar select{height:33px;border:1px solid #ece8df;border-radius:8px;max-width:none;min-width:0;width:100%;padding:0 9px;background:#fff}
+  .filterbar #count{grid-column:1 / -1;margin:0;font-size:10px;color:#9b948b}.zoom{display:none}
+  .smartbar{display:flex;flex-wrap:nowrap;overflow:auto;padding:9px 18px;border-bottom:1px solid var(--line);scrollbar-width:none}.smartbar::-webkit-scrollbar{display:none}
+  .smartbar button,.smartbar label{flex:0 0 auto;height:31px;white-space:nowrap}.smartbar input{height:29px;width:76px}
+  .notice{line-height:1.45}
+  .calendar-shell{height:calc(100dvh - 360px);min-height:330px;overscroll-behavior:contain}
+  .calendar{min-width:860px}.calendar.day-view{min-width:560px}.calendar.list-view{min-width:0}
+  .calendar-header{grid-template-columns:46px repeat(var(--days),minmax(0,1fr))}.calendar-body{grid-template-columns:46px repeat(var(--days),minmax(0,1fr))}
+  .timezone{font-size:7px}.day-header{padding:10px 0 9px}.day-header .day-number{font-size:18px;width:28px;height:28px}.day-header .weekday{font-size:9px}
+  .hour-label{right:7px;font-size:8px}.session{padding:4px 4px 3px}.session-title{font-size:9px;margin:3px 0}.session-time{font-size:8px}.session-cinema{font-size:7px}.session-version,.session-badge{font-size:6px;margin-top:3px}
+  footer{position:sticky;bottom:0;background:#fff;z-index:10}
+  dialog{border-radius:14px;padding:26px 18px;max-height:88dvh;overflow:auto}.detail-meta{grid-template-columns:1fr;gap:13px}.detail-actions{display:grid;grid-template-columns:1fr}.detail-actions .primary,.detail-actions button{text-align:center;width:100%}
+}
